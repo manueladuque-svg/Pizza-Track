@@ -4,21 +4,21 @@
  * utilizando dos pilas manuales basadas en listas ligadas.
  * 
  * Arquitectura de Pilas:
- * 1. Pila Principal (Undo): Almacena el historial de pedidos activos en orden cronológico inverso (LIFO).
- *    Permite eliminar el último pedido registrado mediante la acción 'Deshacer'.
+ * 1. Pila Principal (Undo): Almacena el historial de pedidos activos en orden cronologico inverso (LIFO).
+ *    Permite eliminar el ultimo pedido registrado mediante la accion 'Deshacer'.
  * 2. Pila Secundaria (Redo): Almacena temporalmente los pedidos que fueron deshechos,
- *    permitiendo restaurarlos inmediatamente a la lista activa mediante la acción 'Rehacer'.
+ *    permitiendo restaurarlos inmediatamente a la lista activa mediante la accion 'Rehacer'.
  */
 public class GestionPedidos {
 
-    // Pila que mantiene los pedidos activos y listos para producción
+    // Pila que mantiene los pedidos activos y listos para produccion
     private PilaPizza pilaPrincipal;
 
-    // Pila que almacena temporalmente los pedidos deshechos para su posible recuperación
+    // Pila que almacena temporalmente los pedidos deshechos para su posible recuperacion
     private PilaPizza pilaSecundaria;
 
     /**
-     * Constructor que inicializa las dos pilas manuales en estado vacío.
+     * Constructor que inicializa las dos pilas manuales en estado vacio.
      */
     public GestionPedidos() {
         this.pilaPrincipal = new PilaPizza();
@@ -29,20 +29,20 @@ public class GestionPedidos {
      * Registra un nuevo pedido en el sistema.
      * Inserta la pizza en el tope de la Pila Principal (push).
      * 
-     * Regla de gestión de historial:
-     * Al registrar una nueva acción/pedido, se limpia la Pila Secundaria (Redo),
-     * ya que se inicia una nueva línea de tiempo de pedidos y el historial
+     * Regla de gestion de historial:
+     * Al registrar una nueva accion/pedido, se limpia la Pila Secundaria (Redo),
+     * ya que se inicia una nueva linea de tiempo de pedidos y el historial
      * de rehacer previo pierde validez.
      *
      * @param pizza Objeto Pizza a registrar.
      */
     public void registrarPedido(Pizza pizza) {
         if (pizza == null) {
-            System.out.println("❌ Error: No se puede registrar un pedido nulo.");
+            System.out.println(" [ERROR] No se puede registrar un pedido nulo.");
             return;
         }
 
-        // Operación push en la Pila Principal
+        // Operacion push en la Pila Principal
         pilaPrincipal.push(pizza);
 
         // Al crear un nuevo pedido, se invalida el historial de rehacer
@@ -50,21 +50,21 @@ public class GestionPedidos {
             pilaSecundaria.limpiar();
         }
 
-        System.out.println("✅ Pedido registrado con éxito en la Pila Principal.");
-        System.out.println("   🍕 " + pizza);
+        System.out.println(" [OK] Pedido registrado con exito en la Pila Principal.");
+        System.out.println("      " + pizza);
     }
 
     /**
-     * Deshace el último pedido realizado.
-     * Operación Undo:
+     * Deshace el ultimo pedido realizado.
+     * Operacion Undo:
      * 1. Extrae (pop) la pizza del tope de la Pila Principal.
      * 2. Inserta (push) dicha pizza en el tope de la Pila Secundaria.
      *
-     * @return true si la operación fue exitosa; false si la pila principal estaba vacía.
+     * @return true si la operacion fue exitosa; false si la pila principal estaba vacia.
      */
     public boolean deshacer() {
         if (pilaPrincipal.isEmpty()) {
-            System.out.println("⚠️ No hay pedidos en la Pila Principal para deshacer.");
+            System.out.println(" [AVISO] No hay pedidos en la Pila Principal para deshacer (Pila vacia).");
             return false;
         }
 
@@ -74,23 +74,23 @@ public class GestionPedidos {
         // Push a la pila secundaria
         pilaSecundaria.push(pizzaDeshecha);
 
-        System.out.println("↩️ [DESHACER / UNDO realizado]");
-        System.out.println("   Se retiró de pedidos activos: " + pizzaDeshecha.getNombre());
-        System.out.println("   Guardada en Pila Secundaria para posible recuperación.");
+        System.out.println(" [UNDO / DESHACER REALIZADO]");
+        System.out.println("   -> Se retiro de pedidos activos: " + pizzaDeshecha.getNombre());
+        System.out.println("   -> Movido a Pila Secundaria para posible recuperacion.");
         return true;
     }
 
     /**
-     * Rehace el pedido que fue deshecho más recientemente.
-     * Operación Redo:
+     * Rehace el pedido que fue deshecho mas recientemente.
+     * Operacion Redo:
      * 1. Extrae (pop) la pizza del tope de la Pila Secundaria.
      * 2. Inserta (push) dicha pizza de vuelta en el tope de la Pila Principal.
      *
-     * @return true si la operación fue exitosa; false si la pila secundaria estaba vacía.
+     * @return true si la operacion fue exitosa; false si la pila secundaria estaba vacia.
      */
     public boolean rehacer() {
         if (pilaSecundaria.isEmpty()) {
-            System.out.println("⚠️ No hay pedidos deshechos en la Pila Secundaria para rehacer.");
+            System.out.println(" [AVISO] No hay pedidos deshechos en la Pila Secundaria para rehacer.");
             return false;
         }
 
@@ -100,46 +100,46 @@ public class GestionPedidos {
         // Push de vuelta a la pila principal
         pilaPrincipal.push(pizzaRehecha);
 
-        System.out.println("↪️ [REHACER / REDO realizado]");
-        System.out.println("   Se restauró a pedidos activos: " + pizzaRehecha.getNombre());
+        System.out.println(" [REDO / REHACER REALIZADO]");
+        System.out.println("   -> Se restauro a pedidos activos: " + pizzaRehecha.getNombre());
         return true;
     }
 
     /**
-     * Consulta y muestra la pizza que está actualmente en el tope de la Pila Principal,
-     * la cual corresponde al pedido más reciente listo para producción.
-     * Utiliza la operación no destructiva peek().
+     * Consulta y muestra la pizza que esta actualmente en el tope de la Pila Principal,
+     * la cual corresponde al pedido mas reciente listo para produccion.
+     * Utiliza la operacion no destructiva peek().
      *
-     * @return La Pizza en el tope de la Pila Principal, o null si está vacía.
+     * @return La Pizza en el tope de la Pila Principal, o null si esta vacia.
      */
     public Pizza mostrarPedidoActual() {
         if (pilaPrincipal.isEmpty()) {
-            System.out.println("ℹ️ No hay pedidos activos pendientes de producción en este momento.");
+            System.out.println(" [INFO] No hay pedidos activos pendientes de produccion en este momento.");
             return null;
         }
 
         Pizza pizzaActual = pilaPrincipal.peek();
-        System.out.println("🔥 [PEDIDO ACTUAL LISTO PARA PRODUCCIÓN (PEEK)]");
-        System.out.println("   🍕 " + pizzaActual);
+        System.out.println(" [PEEK / PEDIDO ACTUAL LISTO PARA PRODUCCION]");
+        System.out.println("   -> " + pizzaActual);
         return pizzaActual;
     }
 
     /**
-     * Muestra el estado visual de ambas pilas para monitoreo y fines didácticos.
+     * Muestra el estado visual de ambas pilas para monitoreo y fines didacticos.
      */
     public void mostrarEstadoPilas() {
         System.out.println("\n------------------------------------------------------------");
-        System.out.println("📦 ESTADO ACTUAL DEL SISTEMA PIZZA-TRACK");
+        System.out.println(" ESTADO ACTUAL DEL SISTEMA PIZZA-TRACK");
         System.out.println("------------------------------------------------------------");
-        System.out.println("▶ PILA PRINCIPAL (Pedidos Activos / Undo) [" + pilaPrincipal.size() + " pedido(s)]:");
+        System.out.println(" PILA PRINCIPAL (Pedidos Activos / Undo) [" + pilaPrincipal.size() + " pedido(s)]:");
         pilaPrincipal.imprimirPila();
 
-        System.out.println("\n▶ PILA SECUNDARIA (Pedidos Deshechos / Redo) [" + pilaSecundaria.size() + " pedido(s)]:");
+        System.out.println("\n PILA SECUNDARIA (Pedidos Deshechos / Redo) [" + pilaSecundaria.size() + " pedido(s)]:");
         pilaSecundaria.imprimirPila();
         System.out.println("------------------------------------------------------------\n");
     }
 
-    // Getters auxiliares para pruebas o inspección
+    // Getters auxiliares para pruebas o inspeccion
     public PilaPizza getPilaPrincipal() {
         return pilaPrincipal;
     }
