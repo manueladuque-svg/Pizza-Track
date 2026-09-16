@@ -1,0 +1,159 @@
+import java.util.Arrays;
+
+/**
+ * Clase que representa el modelo de datos de una Pizza en el sistema Pizza-Track.
+ * Este objeto encapsula la información de cada pedido y es el elemento que se
+ * almacena y manipula dentro de las pilas basadas en listas ligadas.
+ * 
+ * Restricciones del modelo:
+ * 1. Solo acepta tipos de pizza del catálogo oficial predefinido.
+ * 2. Requiere obligatoriamente un arreglo de tamaño fijo exactamente de 3 ingredientes.
+ * 3. Valida datos mediante excepciones personalizadas:
+ *    - TipoPizzaInvalidoException
+ *    - IngredientesInvalidosException
+ */
+public class Pizza {
+
+    /**
+     * Catálogo oficial de tipos de pizza permitidos por la pizzería.
+     */
+    public static final String[] TIPOS_VALIDOS = {
+        "Margarita",
+        "Pepperoni",
+        "Hawaiana",
+        "Cuatro Quesos",
+        "Vegetariana",
+        "Mexicana",
+        "Pollo y Champinones"
+    };
+
+    // Nombre/tipo validado de la pizza
+    private String nombre;
+
+    // Arreglo de tamaño fijo (3) obligatorio para almacenar los ingredientes
+    private String[] ingredientes;
+
+    /**
+     * Constructor para inicializar una Pizza validando su tipo y sus 3 ingredientes.
+     *
+     * @param nombre       Nombre o tipo de especialidad de la pizza.
+     * @param ingredientes Arreglo de cadenas que contiene exactamente 3 ingredientes.
+     * @throws TipoPizzaInvalidoException     Si el nombre no pertenece al catálogo oficial.
+     * @throws IngredientesInvalidosException Si el arreglo no tiene longitud 3 o contiene datos vacíos.
+     */
+    public Pizza(String nombre, String[] ingredientes) throws TipoPizzaInvalidoException, IngredientesInvalidosException {
+        setNombre(nombre);
+        setIngredientes(ingredientes);
+    }
+
+    /**
+     * Valida si un nombre o tipo dado corresponde a una de las especialidades autorizadas.
+     * Realiza comparación insensible a mayúsculas/minúsculas y espacios.
+     *
+     * @param tipo Nombre a evaluar.
+     * @return true si es válido, false en caso contrario.
+     */
+    public static boolean esTipoValido(String tipo) {
+        if (tipo == null || tipo.trim().isEmpty()) {
+            return false;
+        }
+        String tipoLimpio = tipo.trim();
+        for (String permitido : TIPOS_VALIDOS) {
+            if (permitido.equalsIgnoreCase(tipoLimpio)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Obtiene el nombre canónico correspondiente al tipo ingresado.
+     *
+     * @param tipo Nombre ingresado.
+     * @return Nombre oficial del catálogo si existe, o el mismo string limpio.
+     */
+    public static String obtenerTipoCanonico(String tipo) {
+        if (tipo == null) return "";
+        String tipoLimpio = tipo.trim();
+        for (String permitido : TIPOS_VALIDOS) {
+            if (permitido.equalsIgnoreCase(tipoLimpio)) {
+                return permitido;
+            }
+        }
+        return tipoLimpio;
+    }
+
+    /**
+     * Retorna una copia del catálogo de tipos disponibles.
+     * @return Arreglo con los nombres permitidos.
+     */
+    public static String[] getTiposDisponibles() {
+        return Arrays.copyOf(TIPOS_VALIDOS, TIPOS_VALIDOS.length);
+    }
+
+    /**
+     * Obtiene el nombre/tipo de la pizza.
+     * @return Nombre de la pizza.
+     */
+    public String getNombre() {
+        return nombre;
+    }
+
+    /**
+     * Modifica el tipo de pizza con validación estricta.
+     * 
+     * @param nombre Nuevo tipo de pizza.
+     * @throws TipoPizzaInvalidoException Si el tipo no está en el catálogo permitido.
+     */
+    public void setNombre(String nombre) throws TipoPizzaInvalidoException {
+        if (!esTipoValido(nombre)) {
+            throw new TipoPizzaInvalidoException(
+                "El tipo de pizza '" + (nombre == null ? "nulo" : nombre) + "' no es valido. "
+                + "Especialidades permitidas: " + String.join(", ", TIPOS_VALIDOS)
+            );
+        }
+        this.nombre = obtenerTipoCanonico(nombre);
+    }
+
+    /**
+     * Obtiene el arreglo fijo de 3 ingredientes.
+     * @return Arreglo de tamaño 3 con los ingredientes.
+     */
+    public String[] getIngredientes() {
+        return ingredientes;
+    }
+
+    /**
+     * Establece los ingredientes verificando el tamaño fijo estricto de 3 elementos.
+     * 
+     * @param ingredientes Arreglo con exactamente 3 ingredientes no vacíos.
+     * @throws IngredientesInvalidosException Si el arreglo no tiene longitud 3 o algún ingrediente es vacío.
+     */
+    public void setIngredientes(String[] ingredientes) throws IngredientesInvalidosException {
+        if (ingredientes == null || ingredientes.length != 3) {
+            throw new IngredientesInvalidosException(
+                "La pizza requiere obligatoriamente un arreglo de tamano fijo con exactamente 3 ingredientes."
+            );
+        }
+
+        this.ingredientes = new String[3];
+        for (int i = 0; i < 3; i++) {
+            if (ingredientes[i] == null || ingredientes[i].trim().isEmpty()) {
+                throw new IngredientesInvalidosException(
+                    "El ingrediente " + (i + 1) + " no puede ser nulo o estar vacio."
+                );
+            }
+            this.ingredientes[i] = ingredientes[i].trim();
+        }
+    }
+
+    /**
+     * Representación textual detallada de la Pizza.
+     * @return Cadena formateada con el nombre y los 3 ingredientes.
+     */
+    @Override
+    public String toString() {
+        return String.format("Pizza: '%s' | Ingredientes: [1: %s, 2: %s, 3: %s]",
+                nombre, ingredientes[0], ingredientes[1], ingredientes[2]);
+    }
+}
