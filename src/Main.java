@@ -11,7 +11,8 @@ import java.util.Scanner;
  * 
  * Incorpora control con excepciones personalizadas:
  * - TipoPizzaInvalidoException: Controla que solo se admitan especialidades del catalogo.
- * - IngredientesInvalidosException: Controla el arreglo estricto de 3 ingredientes no vacios.
+ * - IngredientesInvalidosException: Controla el arreglo estricto de 3 ingredientes no vacios,
+ *   pertenecientes al catalogo oficial y sin duplicados.
  */
 public class Main {
 
@@ -102,7 +103,7 @@ public class Main {
 
     /**
      * Solicita interactivamente los datos de la pizza asegurando que el tipo de pizza
-     * pertenezca al catalogo oficial y que contenga 3 ingredientes obligatorios.
+     * y cada uno de los 3 ingredientes pertenezcan a los catalogos oficiales autorizados.
      * Implementa control estricto con excepciones personalizadas mediante try-catch.
      *
      * @param scanner Objeto Scanner para capturar datos por teclado.
@@ -113,33 +114,31 @@ public class Main {
         System.out.println("  REGISTRO DE NUEVO PEDIDO (PUSH)");
         System.out.println("------------------------------------------------------------");
 
-        String[] catalogo = Pizza.getTiposDisponibles();
+        // 1. SELECCION Y VALIDACION DEL TIPO DE PIZZA
+        String[] catalogoPizzas = Pizza.getTiposDisponibles();
         System.out.println("Catalogo de Especialidades Autorizadas:");
-        for (int i = 0; i < catalogo.length; i++) {
-            System.out.println("  [" + (i + 1) + "] " + catalogo[i]);
+        for (int i = 0; i < catalogoPizzas.length; i++) {
+            System.out.println("  [" + (i + 1) + "] " + catalogoPizzas[i]);
         }
         System.out.println("------------------------------------------------------------");
 
         String nombreElegido = null;
 
-        // Bucle de captura del tipo de pizza con control de TipoPizzaInvalidoException
         while (nombreElegido == null) {
-            System.out.print(">> Seleccione el numero [1-" + catalogo.length + "] o escriba el nombre de la pizza: ");
+            System.out.print(">> Seleccione el numero [1-" + catalogoPizzas.length + "] o escriba el nombre de la pizza: ");
             String entrada = scanner.nextLine().trim();
 
             try {
-                // Verificar si ingreso un numero de indice
                 if (entrada.matches("\\d+")) {
                     int indice = Integer.parseInt(entrada);
-                    if (indice >= 1 && indice <= catalogo.length) {
-                        nombreElegido = catalogo[indice - 1];
+                    if (indice >= 1 && indice <= catalogoPizzas.length) {
+                        nombreElegido = catalogoPizzas[indice - 1];
                     } else {
                         throw new TipoPizzaInvalidoException(
                             "El indice '" + entrada + "' no corresponde a ninguna especialidad autorizada."
                         );
                     }
                 } else {
-                    // Validar si el texto ingresado coincide con alguna especialidad
                     if (Pizza.esTipoValido(entrada)) {
                         nombreElegido = Pizza.obtenerTipoCanonico(entrada);
                     } else {
@@ -154,41 +153,78 @@ public class Main {
             }
         }
 
-        System.out.println(">> Especialidad seleccionada: " + nombreElegido);
+        System.out.println(">> Especialidad confirmada: " + nombreElegido);
 
-        // Arreglo obligatorio de tamano fijo (3) para almacenar los ingredientes
-        String[] ingredientes = new String[3];
-        boolean ingredientesCorrectos = false;
-
-        while (!ingredientesCorrectos) {
-            try {
-                System.out.println("\nIngrese a continuacion los 3 ingredientes requeridos:");
-                for (int i = 0; i < 3; i++) {
-                    System.out.print("   * Ingrediente " + (i + 1) + " de 3: ");
-                    String ing = scanner.nextLine().trim();
-
-                    if (ing.isEmpty()) {
-                        throw new IngredientesInvalidosException(
-                            "El ingrediente " + (i + 1) + " no puede estar vacio."
-                        );
-                    }
-                    ingredientes[i] = ing;
-                }
-
-                // Instanciacion del modelo Pizza controlando posibles excepciones
-                Pizza nuevaPizza = new Pizza(nombreElegido, ingredientes);
-                
-                // Registro (Push) en la Pila Principal a traves del controlador
-                sistema.registrarPedido(nuevaPizza);
-                ingredientesCorrectos = true;
-
-            } catch (IngredientesInvalidosException ex) {
-                System.out.println(" [ERROR: IngredientesInvalidosException] " + ex.getMessage());
-                System.out.println("   Por favor reingrese los 3 ingredientes desde el inicio.");
-            } catch (TipoPizzaInvalidoException ex) {
-                System.out.println(" [ERROR: TipoPizzaInvalidoException] " + ex.getMessage());
-                break;
+        // 2. SELECCION Y VALIDACION DE LOS 3 INGREDIENTES
+        String[] catalogoIngredientes = Pizza.getIngredientesDisponibles();
+        System.out.println("\n------------------------------------------------------------");
+        System.out.println("Catalogo de Ingredientes Autorizados (Seleccione 3 distintos):");
+        for (int i = 0; i < catalogoIngredientes.length; i++) {
+            System.out.printf("  [%2d] %-22s", (i + 1), catalogoIngredientes[i]);
+            if ((i + 1) % 2 == 0 || i == catalogoIngredientes.length - 1) {
+                System.out.println();
             }
+        }
+        System.out.println("------------------------------------------------------------");
+
+        // Arreglo obligatorio de tamano fijo (3)
+        String[] ingredientes = new String[3];
+
+        for (int i = 0; i < 3; i++) {
+            boolean ingredienteValido = false;
+
+            while (!ingredienteValido) {
+                System.out.print(">> Ingrese el Ingrediente " + (i + 1) + " de 3 (numero [1-" + catalogoIngredientes.length + "] o nombre): ");
+                String entradaIng = scanner.nextLine().trim();
+
+                try {
+                    String seleccionado = null;
+
+                    if (entradaIng.matches("\\d+")) {
+                        int idx = Integer.parseInt(entradaIng);
+                        if (idx >= 1 && idx <= catalogoIngredientes.length) {
+                            seleccionado = catalogoIngredientes[idx - 1];
+                        } else {
+                            throw new IngredientesInvalidosException(
+                                "El numero '" + entradaIng + "' esta fuera de rango [1-" + catalogoIngredientes.length + "]."
+                            );
+                        }
+                    } else {
+                        if (Pizza.esIngredienteValido(entradaIng)) {
+                            seleccionado = Pizza.obtenerIngredienteCanonico(entradaIng);
+                        } else {
+                            throw new IngredientesInvalidosException(
+                                "'" + entradaIng + "' no es un ingrediente permitido del catalogo oficial."
+                            );
+                        }
+                    }
+
+                    // Validar si ya fue seleccionado en esta misma pizza
+                    for (int j = 0; j < i; j++) {
+                        if (ingredientes[j].equalsIgnoreCase(seleccionado)) {
+                            throw new IngredientesInvalidosException(
+                                "El ingrediente '" + seleccionado + "' ya fue agregado previamente. No se permiten ingredientes repetidos."
+                            );
+                        }
+                    }
+
+                    ingredientes[i] = seleccionado;
+                    ingredienteValido = true;
+                    System.out.println("   [OK] Ingrediente " + (i + 1) + " asignado: " + seleccionado);
+
+                } catch (IngredientesInvalidosException ex) {
+                    System.out.println(" [ERROR: IngredientesInvalidosException] " + ex.getMessage());
+                    System.out.println("   Por favor elija un ingrediente valido del catalogo.");
+                }
+            }
+        }
+
+        // 3. CREACION DEL OBJETO PIZZA Y PUSH EN PILA PRINCIPAL
+        try {
+            Pizza nuevaPizza = new Pizza(nombreElegido, ingredientes);
+            sistema.registrarPedido(nuevaPizza);
+        } catch (TipoPizzaInvalidoException | IngredientesInvalidosException ex) {
+            System.out.println(" [ERROR AL CREAR PEDIDO] " + ex.getMessage());
         }
     }
 }
