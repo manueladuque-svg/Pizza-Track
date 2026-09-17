@@ -76,7 +76,7 @@ Desde la terminal en la raiz del proyecto:
 
 ## Evidencias de Ejecucion
 
-- **1. Registro de Pizza:** *(Pega aqui tu captura de consola)*
+- **1. Registro de Pizza:** 
 - **2. Mostrar Pedido Actual (Peek):** *(Pega aqui tu captura de consola)*
 - **3. Deshacer (Undo):** *(Pega aqui tu captura de consola)*
 - **4. Rehacer (Redo):** *(Pega aqui tu captura de consola)*
@@ -88,4 +88,4 @@ Desde la terminal en la raiz del proyecto:
 - **Estudiante:** Manuela Duque Contreras
 - **Institucion:** IU Digital
 - **Materia:** Estructura de Datos
-- **Enlace:** `[Pega aqui el enlace de tu video]`
+- **Enlace:** https://youtu.be/jPu3uWoNdJw
