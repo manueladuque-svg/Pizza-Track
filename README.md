@@ -77,9 +77,13 @@ Desde la terminal en la raiz del proyecto:
 ## Evidencias de Ejecucion
 
 - **1. Registro de Pizza:**
+---
 ![Registro](ejecucion.png)
+---
 
-- **2. Mostrar Pedido Actual (Peek):** *(Pega aqui tu captura de consola)*
+- **2. Mostrar Pedido Actual (Peek):**
+---
+![Registro](ejecucion.png)
 - **3. Deshacer (Undo):** *(Pega aqui tu captura de consola)*
 - **4. Rehacer (Redo):** *(Pega aqui tu captura de consola)*
 
