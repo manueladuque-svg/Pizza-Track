@@ -21,6 +21,7 @@ public class Main {
         GestionPedidos sistema = new GestionPedidos();
 
         boolean salir = false;
+        String proximaOpcion = null;
 
         System.out.println("============================================================");
         System.out.println("              SISTEMA DE PEDIDOS PIZZA-TRACK                ");
@@ -28,9 +29,17 @@ public class Main {
         System.out.println("============================================================");
 
         while (!salir) {
-            mostrarMenu();
-            System.out.print(">> Ingrese una opcion: ");
-            String opcionStr = scanner.nextLine().trim();
+            String opcionStr;
+            if (proximaOpcion != null && !proximaOpcion.isEmpty()) {
+                mostrarMenu();
+                System.out.println(">> Ingrese una opcion: " + proximaOpcion);
+                opcionStr = proximaOpcion;
+                proximaOpcion = null;
+            } else {
+                mostrarMenu();
+                System.out.print(">> Ingrese una opcion: ");
+                opcionStr = scanner.nextLine().trim();
+            }
 
             switch (opcionStr) {
                 case "1":
@@ -78,7 +87,10 @@ public class Main {
 
             if (!salir) {
                 System.out.print("\nPresione ENTER para continuar al menu...");
-                scanner.nextLine();
+                String entradaPausa = scanner.nextLine().trim();
+                if (!entradaPausa.isEmpty()) {
+                    proximaOpcion = entradaPausa;
+                }
             }
         }
 
