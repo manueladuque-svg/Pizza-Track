@@ -84,9 +84,14 @@ Desde la terminal en la raiz del proyecto:
 - **2. Mostrar Pedido Actual (Peek):**
 ---
 ![Registro](img2.png)
-- **3. Deshacer (Undo):** *(Pega aqui tu captura de consola)*
+- **3. Deshacer (Undo):**
+---
+![Registro](img3.png)
+---
 - **4. Rehacer (Redo):** *(Pega aqui tu captura de consola)*
-
+---
+![Registro](img4.png)
+---
 ---
 
 ## Enlace del Video de Sustentacion
